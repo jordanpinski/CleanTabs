@@ -151,7 +151,8 @@ class CleanTabs {
 
       // 1. Create the accordion group
       let accordionGroup = document.createElement('div');
-      accordionGroup.dataset.accordionGroup = "";
+      accordionGroup.dataset.accordionTabGroup = '';
+      accordionGroup.dataset.accordionGroup = '';
       accordionGroup.dataset.guid = guid;
 
       for (var i = 0; i < buttons.length; i++) {
