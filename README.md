@@ -22,7 +22,7 @@ Include the CSS/JS in your HTML.
 ## Basic Usage
 Add the required HTML & initialize.
 ```
-<div class="clean-tabs" data-tab-group>
+<div data-tab-group>
 
   <ul>
     <li data-button><a href="#" title="Tab 1">Tab 1</a></li>
@@ -47,7 +47,7 @@ Add the required HTML & initialize.
 ```
 <script>
 
-  const elements = document.querySelectorAll('.clean-tabs');
+  const elements = document.querySelectorAll('[data-tab-group');
   const cleanTabs = new CleanBackgroundVideo(elements);
 
 </script>
