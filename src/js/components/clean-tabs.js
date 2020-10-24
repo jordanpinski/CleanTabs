@@ -57,7 +57,7 @@ class CleanTabs {
   }
 
   handleTabClick(event) {
-    event.preventDefault;
+    event.preventDefault();
     if(!event.target.closest('[data-button]')) return;
 
     let button = event.target.closest('[data-button]');
