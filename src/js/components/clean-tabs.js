@@ -28,8 +28,18 @@ class CleanTabs {
   }
 
   openFirst(guid = 0) {
-    if (this.options.openFirst) guid = this.options.openFirst;
     this.cleanTabs.forEach( (cleanTab) => {
+
+      // 1. Check if openFirst option was passed.
+      if (this.options.openFirst) guid = this.options.openFirst;
+
+      let dataOptions = this.getDataOptions(cleanTab);
+      if (dataOptions) {
+        let tabCount = cleanTab.querySelectorAll('[data-button]').length - 1;
+        if ('openFirst' in dataOptions) guid = dataOptions.openFirst <= tabCount ? dataOptions.openFirst : guid;
+      }
+
+      // 2. Open the tab
       let tab = {
         button: cleanTab.querySelector(`[data-button][data-guid="${guid}"]`),
         content: cleanTab.querySelector(`[data-content][data-guid="${guid}"]`),
@@ -75,6 +85,7 @@ class CleanTabs {
     this.open(tab);
   }
 
+  // TODO: Refactor this. Should use index or id to open. Building a tab object is too much work.
   open(tab) {
     let { button, content, guid } = tab;
     
@@ -209,6 +220,11 @@ class CleanTabs {
         content.dataset.guid = contentIndex;
       })
     });
+  }
+
+  getDataOptions(cleanTab) {
+    if (!cleanTab.hasAttribute('data-options')) return;
+    return JSON.parse(cleanTab.dataset.options);
   }
 }
 
