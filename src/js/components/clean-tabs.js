@@ -8,7 +8,8 @@ class CleanTabs {
 
     const defaultOptions = {
       _name: 'CleanTabs',
-      _version: '1.0.0',
+      _version: '1.0.1',
+      openFirst: null,
       beforeOpen: (tab) => {},
       afterOpen: (tab) => {},
       beforeClose: (tab) => {},
@@ -23,6 +24,20 @@ class CleanTabs {
     this.addGuids();
     this.buildMobile();
     this.bindEvents();
+    this.openFirst();
+  }
+
+  openFirst(guid = 0) {
+    if (this.options.openFirst) guid = this.options.openFirst;
+    this.cleanTabs.forEach( (cleanTab) => {
+      let tab = {
+        button: cleanTab.querySelector(`[data-button][data-guid="${guid}"]`),
+        content: cleanTab.querySelector(`[data-content][data-guid="${guid}"]`),
+        guid: guid,
+      }
+
+      this.open(tab);
+    });
   }
 
   bindEvents() {
@@ -140,17 +155,13 @@ class CleanTabs {
 
         // Create the accordion title
         let accordionTitle = document.createElement('div');
-        accordionTitle.dataset.title = "";
+        accordionTitle.dataset.control = "";
         accordionTitle.innerText = button.innerText;
   
         // Create the accordion content
         let accordionContent = document.createElement('div');
         accordionContent.dataset.content = "";
-
-        let wrapper = document.createElement('div');
-        wrapper.classList.add('wrapper')
-        wrapper.innerHTML = tempContent.innerHTML;
-        accordionContent.appendChild(wrapper);
+        accordionContent.innerHTML = tempContent.innerHTML;
         
         accordion.appendChild(accordionTitle)
         accordion.appendChild(accordionContent);
@@ -206,6 +217,8 @@ class CleanTabs {
 
 
 
+// TODO: Add aria support
+
 /**
  * Entry point to the plugin.
  */
@@ -215,8 +228,8 @@ class CleanAccordion {
     if (this.cleanAccordionGroups.length <= 0) return;
 
     const defaultOptions = {
-      _name: 'CleanAccordion',
-      _version: '1.0.0',
+      _name: "CleanAccordion",
+      _version: "1.0.0",
       singleOpen: true,                 // Should only one accordion be open at a time?
       beforeOpen: (accordion) => {},
       afterOpen: (accordion) => {},
@@ -249,7 +262,7 @@ class CleanAccordion {
     let accordion = target.parentNode
 
     // 1. Check if the title was clicked
-    if (target.hasAttribute('data-title')) {
+    if (target.hasAttribute('data-control')) {
 
       // 2. Open/Close the accordion
       this.openClose(accordion);
@@ -276,20 +289,19 @@ class CleanAccordion {
 
   calculateContentHeight(content) {
     if (!content.parentNode.classList.contains('open')) return;
-    let height = 0;
-
-    const children = Array.prototype.slice.call(content.children);
-
-    children.forEach( (child) => {
-      height += child.scrollHeight;
-
-      // Add the top margin of first child
-      //let firstChildStyle = child.children[0].currentStyle || window.getComputedStyle(child.children[0]);
-      //let firstChildHeight = parseInt(firstChildStyle.marginTop.replace('px', ''));
-      //height += firstChildHeight;
-    });
-      
-    content.style.maxHeight = `${height}px`;
+    content.style.maxHeight = `${content.scrollHeight}px`;
+  }
+  
+  /**
+   * Returns the computed height including margin of the passed element
+   * @param {object} element 
+   */
+  getComputedHeight(element) {
+    let height = element.scrollHeight
+    let computedStyle = window.getComputedStyle(element);
+    let marginTop = parseInt(computedStyle.marginTop.replace('px', ''));
+    let marginBottom = parseInt(computedStyle.marginBottom.replace('px', ''));
+    return height + marginTop + marginBottom;
   }
 
   resetContentHeight(content) {
@@ -301,7 +313,6 @@ class CleanAccordion {
    * @param {*} accordion The accordion to open 
    */
   open(accordion) {
-
     // 1. beforeOpen callback
     this.options.beforeOpen(accordion);
 
