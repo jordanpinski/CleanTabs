@@ -22,7 +22,7 @@ Include the CSS/JS in your HTML.
 ## Basic Usage
 Add the required HTML & initialize.
 ```
-<div data-tab-group data-options='{"openFirst": 1}'>
+<div data-tab-group>
 
   <ul>
     <li data-button><a href="#" title="Tab 1">Tab 1</a></li>
